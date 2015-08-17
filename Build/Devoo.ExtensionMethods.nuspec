@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Devoo.ExtensionMethods</id>
+        <version>0.5.0</version>
+        <authors>Devoo</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Extension Methods for common framework classes</description>
+        <tags>c#, extension methods, devoo</tags>
+    </metadata>
+    <files>
+        <file src="..\Devoo.ExtensionMethods\StringExtensionMethods.cs"       target="content\Devoo\StringExtensionMethods.cs" />
+        <file src="..\Devoo.ExtensionMethods\CollectionsExtensionMethods.cs"  target="content\Devoo\CollectionsExtensionMethods.cs" />
+    </files>
+</package>
