@@ -8,12 +8,7 @@ using System.Linq;
 namespace System
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
-#if INTERNAL
-    internal
-#else
-    public 
-#endif
-        static class DevooCollectionsExtensionMethods
+    public static class DevooCollectionsExtensionMethods
     {
 
         public static bool IsNullOrZeroItems(this IList list)

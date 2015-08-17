@@ -12,12 +12,7 @@ using System.Text.RegularExpressions;
 namespace System
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
-#if INTERNAL
-    internal
-#else
-    public 
-#endif
-        static class StringExtensionMethods
+    public static class StringExtensionMethods
     {
         public static bool EqualsIgnoreCase(this string text, string toCheck)
         {

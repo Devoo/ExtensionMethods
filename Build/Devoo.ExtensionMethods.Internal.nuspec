@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
-        <id>Devoo.ExtensionMethods</id>
+        <id>Devoo.ExtensionMethods.Internal</id>
         <version>0.5.0</version>
         <authors>Marcos Meli</authors>
         <licenseUrl>https://github.com/Devoo/ExtensionMethods/blob/master/LICENSE</licenseUrl>
         <projectUrl>https://github.com/Devoo/ExtensionMethods</projectUrl>
         <iconUrl>https://raw.githubusercontent.com/Devoo/ExtensionMethods/master/Build/Devoo.ExtensionMethods.small.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>A set of c# extension methods for common framework classes</description>
-        <summary>A set of c# extension methods for common framework classes</summary>
+        <description>A set of c# extension methods for common framework classes. Implemented as internal static classes</description>
+        <summary>A set of c# extension methods for common framework classes. Implemented as internal static classes</summary>
         <copyright>Devoo</copyright>
         <tags>c#, extension methods, devoo</tags>
     </metadata>

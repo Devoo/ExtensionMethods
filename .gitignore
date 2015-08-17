@@ -6,3 +6,5 @@
 /Devoo.ExtensionMethods.Tests/obj
 /Devoo.ExtensionMethods.Tests/*.user
 /Devoo.ExtensionMethods/*.user
+
+*.nupkg
