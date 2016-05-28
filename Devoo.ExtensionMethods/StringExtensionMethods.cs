@@ -4,7 +4,6 @@ using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -19,17 +18,16 @@ namespace System
             return string.Equals(text, toCheck, StringComparison.OrdinalIgnoreCase);
         }
 
-        public static bool EqualsIgnoreCaseAndAccent(this string text, string toCheck)
-        {
-            return string.Compare(text, toCheck, CultureInfo.InvariantCulture, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) == 0;
-        }
-
         public static bool EqualsToAnyIgnoreCase(this string text, params string[] toCheck)
         {
             if (toCheck == null)
                 return false;
 
-            return toCheck.Any(t => string.Equals(text, t, StringComparison.OrdinalIgnoreCase));
+            foreach (var t in toCheck)
+            {
+                if (string.Equals(text, t, StringComparison.OrdinalIgnoreCase)) return true;
+            }
+            return false;
         }
 
         //public static bool EqualsIgnoreCase(this char c, char toCheck)
@@ -97,7 +95,7 @@ namespace System
         /// 
         /// 
 
-        private static readonly Regex mSplitWords = new Regex(@"\W+", RegexOptions.Compiled);
+        private static readonly Regex mSplitWords = new Regex(@"\W+");
 
         public static string[] SplitInWords(this string s)
         {
@@ -121,10 +119,10 @@ namespace System
                 if (word.Length > wordlength)
                 {
                     res.Add(word);
-                }                
+                }
             }
-            
-            return res;            
+
+            return res;
         }
 
         public static int TotalWords(this string text)
@@ -164,7 +162,7 @@ namespace System
                 if (newIndex < 0)
                 {
                     if (s.Length > index)
-                        yield return s.Substring(index); 
+                        yield return s.Substring(index);
 
                     yield break;
                 }
@@ -200,7 +198,7 @@ namespace System
 
         public static string[] SplitInLines(this string s)
         {
-            return s.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+            return s.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
         }
 
         public static T[] SplitInLinesTyped<T>(this string s) where T : IComparable
@@ -210,14 +208,14 @@ namespace System
 
         public static string[] SplitInLinesRemoveEmptys(this string s)
         {
-            return s.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
+            return s.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
         }
-        
+
 
         public static Tuple<string, string> SplitByIndex(this string text, int index)
         {
             if (text.IsNullOrEmpty())
-                return new Tuple<string, string>("","");
+                return new Tuple<string, string>("", "");
 
             if (index >= text.Length)
                 return new Tuple<string, string>(text, "");
@@ -303,12 +301,20 @@ namespace System
 
         public static bool ContainsWholePhraseAny(this string text, params string[] toCheck)
         {
-            return toCheck.Any(phrase => text.ContainsWholePhrase(phrase));
+            foreach (var phrase in toCheck)
+            {
+                if (text.ContainsWholePhrase(phrase)) return true;
+            }
+            return false;
         }
 
         public static bool ContainsWholePhraseAll(this string text, params string[] toCheck)
         {
-            return toCheck.All(phrase => text.ContainsWholePhrase(phrase));
+            foreach (var phrase in toCheck)
+            {
+                if (!text.ContainsWholePhrase(phrase)) return false;
+            }
+            return true;
         }
 
         public static string FindFirstPhrase(this string text, params string[] phrasesToCheck)
@@ -350,7 +356,11 @@ namespace System
             if (toCheck == null || toCheck.Length == 0)
                 throw new ArgumentException("El parametro 'toChek' es vacio");
 
-            return toCheck.Any(checking => text.IndexOfIgnoreCase(checking) >= 0);
+            foreach (var checking in toCheck)
+            {
+                if (text.IndexOfIgnoreCase(checking) >= 0) return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -364,7 +374,11 @@ namespace System
             if (toCheck == null || toCheck.Length == 0)
                 throw new ArgumentException("El parametro 'toChek' es vacio");
 
-            return toCheck.All(checking => text.IndexOfIgnoreCase(checking) >= 0);
+            foreach (var checking in toCheck)
+            {
+                if (text.IndexOfIgnoreCase(checking) < 0) return false;
+            }
+            return true;
         }
 
         public static bool ContainsOnlyThisChar(this string text, char toCheck)
@@ -372,7 +386,11 @@ namespace System
             if (text.Length == 0)
                 return false;
 
-            return text.All(t => t == toCheck);
+            foreach (var t in text)
+            {
+                if (t != toCheck) return false;
+            }
+            return true;
         }
 
 
@@ -448,7 +466,7 @@ namespace System
             }
             return res;
         }
-        
+
 
         public static string FindAndReplaceFirstOcurrence(this string text, string newValue, params string[] oldValues)
         {
@@ -494,7 +512,7 @@ namespace System
 
         public static bool StartsWithAnyIgnoreCase(this string text, params string[] toCheck)
         {
-            return StartsWithAnyIgnoreCase(text, (IEnumerable<string>) toCheck);
+            return StartsWithAnyIgnoreCase(text, (IEnumerable<string>)toCheck);
         }
 
         public static bool StartsWithAnyIgnoreCase(this string text, IEnumerable<string> toCheck)
@@ -502,7 +520,11 @@ namespace System
             if (text.IsNullOrEmpty())
                 return false;
 
-            return toCheck.Any(check => text.StartsWith(check, StringComparison.OrdinalIgnoreCase));
+            foreach (var check in toCheck)
+            {
+                if (text.StartsWith(check, StringComparison.OrdinalIgnoreCase)) return true;
+            }
+            return false;
         }
 
         public static bool EndsWithIgnoreCase(this string text, string toCheck)
@@ -518,7 +540,7 @@ namespace System
 
         public static bool EndsWithAnyIgnoreCase(this string text, params string[] toCheck)
         {
-            return EndsWithAnyIgnoreCase(text, (IEnumerable<string>) toCheck);
+            return EndsWithAnyIgnoreCase(text, (IEnumerable<string>)toCheck);
         }
 
         public static bool EndsWithAnyIgnoreCase(this string text, IEnumerable<string> toCheck)
@@ -526,20 +548,24 @@ namespace System
             if (text.IsNullOrEmpty())
                 return false;
 
-            return toCheck.Any(check => text.EndsWith(check, StringComparison.OrdinalIgnoreCase));
+            foreach (var check in toCheck)
+            {
+                if (text.EndsWith(check, StringComparison.OrdinalIgnoreCase)) return true;
+            }
+            return false;
         }
 
         //private static readonly CultureInfo CultureHelper.CultureUSA = new CultureInfo("en-us");
         //private static CultureInfo CultureHelper.Argentina = new CultureInfo("es-ar");
 
-     
+
         public static string ToLink(this string text, string href, string target = "")
         {
             return "<a href='" + href + "' " + (target.IsNullOrEmpty() ? "" : " target='" + target + "'") + ">" + text +
                    "</a>";
         }
 
-        
+
         /// <summary>
         /// Remueve la cadena especificada si se encuentra
         /// </summary>
@@ -581,7 +607,7 @@ namespace System
             return !String.IsNullOrEmpty(texto);
         }
 
-        
+
         /// <summary>
         /// Determina si una cadena es Nula, vacia o solo tiene caracteres blancos (tab, space, enter)
         /// </summary>
@@ -734,15 +760,15 @@ namespace System
 
         public static string ReplaceFirstOccurrence(this string original, string oldValue, string newValue)
         {
-            if (oldValue.IsNullOrEmpty()) 
+            if (oldValue.IsNullOrEmpty())
                 return original;
 
             var index = original.IndexOfIgnoreCase(oldValue);
 
-            if (index < 0) 
+            if (index < 0)
                 return original;
 
-            else if (index == 0) 
+            else if (index == 0)
                 return newValue + original.Substring(oldValue.Length);
             else
                 return original.Substring(0, index) + newValue + original.Substring(index + oldValue.Length);
@@ -836,7 +862,7 @@ namespace System
             return res;
         }
 
-        #if !SILVERLIGHT
+#if !SILVERLIGHT
         public static string ToValidIdentifier(this string original)
         {
             original = original.ToCapitalCase();
@@ -860,15 +886,34 @@ namespace System
             return res.ToString().ReplaceRecursive("__", "_").Trim('_');
         }
 
-        
+
         public static string ToCapitalCase(this string original)
         {
-            return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(original.ToLower())
-                .Replace(" Y ", " y ")
+            var words = original.Split(' ');
+            var result = new List<string>();
+            foreach (var word in words)
+            {
+                if (word.Length == 0 || AllCapitals(word))
+                    result.Add(word);
+                else if (word.Length == 1)
+                    result.Add(word.ToUpper());
+                else
+                    result.Add(Char.ToUpper(word[0]) + word.Remove(0, 1).ToLower());
+            }
+
+            return string.Join(" ", result).Replace(" Y ", " y ")
                 .Replace(" De ", " de ")
                 .Replace(" O ", " o ");
+
         }
-        #endif
+
+        static bool AllCapitals(string input)
+        {
+            return input.ToCharArray().All(Char.IsUpper);
+        }
+
+
+#endif
         public static string ToCamelCase(this string original)
         {
             if (original.Length <= 1)
@@ -877,12 +922,12 @@ namespace System
             return char.ToLower(original[0]) + original.Substring(1);
         }
 
-        #if !SILVERLIGHT
+#if !SILVERLIGHT
         public static string UseAsSeparatorFor<T>(this string separator, IEnumerable<T> list)
         {
             return list.JoinToString(separator);
         }
-        #endif
+#endif
         public static string AvoidNull(this string original)
         {
             if (original == null)
@@ -1020,7 +1065,7 @@ namespace System
                            .Replace("*", ".*")
                            .Replace("%", ".*")
                            .Replace("\\.*", "\\%")
-                           + "$",RegexOptions.IgnoreCase);
+                           + "$", RegexOptions.IgnoreCase);
 
             return regex.IsMatch(me);
         }
@@ -1042,7 +1087,7 @@ namespace System
                 return me;
 
             string ante = null;
-            while(ante != me)
+            while (ante != me)
             {
                 ante = me;
                 me = me.Replace("  ", " ");
@@ -1067,26 +1112,26 @@ namespace System
             return me;
         }
 
-        #if !SILVERLIGHT
+#if !SILVERLIGHT
         public static T[] SplitTyped<T>(this string me, char delimiter)
-            where T:IComparable
+            where T : IComparable
         {
             if (me.IsNullOrWhite())
-                return new T[] {};
+                return new T[] { };
 
             me = me.Trim();
 
-            var parts = me.Split(new char[] {delimiter}, StringSplitOptions.RemoveEmptyEntries);
+            var parts = me.Split(new char[] { delimiter }, StringSplitOptions.RemoveEmptyEntries);
 
             var res = new T[parts.Length];
 
             for (int i = 0; i < parts.Length; i++)
             {
-                res[i] = (T) Convert.ChangeType(parts[i], typeof (T));
+                res[i] = (T)Convert.ChangeType(parts[i], typeof(T));
             }
             return res;
         }
-        
+
         public static T[] SplitTyped<T>(this string me, string delimiter)
          where T : IComparable
         {
@@ -1115,7 +1160,7 @@ namespace System
             {
                 if (char.IsSeparator(me, i))
                 {
-                    if (i == me.Length -1) // Si el separador es el ultimo entonces vacio
+                    if (i == me.Length - 1) // Si el separador es el ultimo entonces vacio
                         return string.Empty;
                     else
                         return me.Substring(i + 1);
@@ -1124,7 +1169,7 @@ namespace System
             }
             return me;
         }
-        #if !SILVERLIGHT
+#if !SILVERLIGHT
         public static string SecondWord(this string me)
         {
             if (me.IsNullOrEmpty())
@@ -1133,10 +1178,10 @@ namespace System
             var parts = me.SplitInWords();
             if (parts.Length >= 2)
                 return parts[1];
-            else 
+            else
                 return string.Empty;
         }
-        #endif
+#endif
 
         public static string FirstWord(this string me)
         {
@@ -1183,7 +1228,7 @@ namespace System
             var res = new StringBuilder(me.Length);
             foreach (var caracter in me)
             {
-                if (caracter.IsOn('1','2','3','4','5','6','7','8','9','0'))
+                if (caracter.IsOn('1', '2', '3', '4', '5', '6', '7', '8', '9', '0'))
                     res.Append(toReplace);
                 else
                     res.Append(caracter);
@@ -1216,7 +1261,7 @@ namespace System
         }
 
         #region Contains digits and letters revisar redundancias
-        
+
 
         public static string OnlyLettersNumbers(this string text)
         {
@@ -1242,7 +1287,7 @@ namespace System
 
             return res.ToString();
         }
-        
+
 
         public static bool IsUpper(this string text)
         {
@@ -1270,7 +1315,11 @@ namespace System
 
         public static bool ContainsOnlyDigits(this string text) //ver
         {
-            return text.All(car => char.IsDigit(car));
+            foreach (var car in text)
+            {
+                if (!char.IsDigit(car)) return false;
+            }
+            return true;
         }
 
         public static string OnlyDigits(this string text) //ver
@@ -1280,12 +1329,20 @@ namespace System
 
         public static bool NotContainsDigits(this string text) //Ver
         {
-            return text.All(car => !char.IsDigit(car));
+            foreach (var car in text)
+            {
+                if (char.IsDigit(car)) return false;
+            }
+            return true;
         }
 
         public static bool ContainsDigit(this string text) //ver
         {
-            return text.Any(car => char.IsDigit(car));
+            foreach (var car in text)
+            {
+                if (char.IsDigit(car)) return true;
+            }
+            return false;
         }
 
         public static string OnlyDigits(this string text, IEnumerable<char> excepciones) //ver
@@ -1387,7 +1444,7 @@ namespace System
 
             int res = 0;
             int posIni = 0;
-            while ((posIni = text.IndexOfIgnoreCase(posIni,toCheck)) != -1)
+            while ((posIni = text.IndexOfIgnoreCase(posIni, toCheck)) != -1)
             {
                 posIni += toCheck.Length;
                 res++;
@@ -1439,19 +1496,19 @@ namespace System
                 && Math.Abs(text.Length - toCheck.Length) != 1) //las long deben diferir en 1, y ambas ser mayor que 1
                 return false;
 
-            var textWithChar = (text.Length > toCheck.Length? text : toCheck);
-            var textNoChar = (text.Length > toCheck.Length ? toCheck : text); 
+            var textWithChar = (text.Length > toCheck.Length ? text : toCheck);
+            var textNoChar = (text.Length > toCheck.Length ? toCheck : text);
 
             //chequear si es el ultimo
             if (textWithChar[textWithChar.Length - 1] != textNoChar[textNoChar.Length - 1])
-                return textWithChar.Substring(0,textWithChar.Length - 1).EqualsIgnoreCase(textNoChar);
+                return textWithChar.Substring(0, textWithChar.Length - 1).EqualsIgnoreCase(textNoChar);
 
             for (int i = 0; i < textNoChar.Length; i++)
             {
                 if (textWithChar[i] != textNoChar[i])
-                { 
+                {
                     //a partir del car distinto, el resto debe coincidir
-                    return textWithChar.Substring(i+1).EqualsIgnoreCase(textNoChar.Substring(i));
+                    return textWithChar.Substring(i + 1).EqualsIgnoreCase(textNoChar.Substring(i));
                 }
             }
             return false;
@@ -1559,7 +1616,7 @@ namespace System
             }
 
             return TipoSimilitud.Ninguna;
-        } 
+        }
 
 
         public static string RemoveAcentosIgnoreCaseAndÑ(this string text)
@@ -1599,105 +1656,6 @@ namespace System
             return match.Groups[name].Value;
         }
 
-        public static string SafeGroupValueInterned(this Match match, string name)
-        {
-            var group = match.Groups[name];
-
-            if (group == null)
-                return null;
-
-            return string.Intern(match.Groups[name].Value);
-        }
-
-        #if !SILVERLIGHT
-
-        public static string Encrypt(this string clearText, string password)
-        {
-            if (clearText.Length == 0)
-                return string.Empty;
-
-            byte[] clearBytes = System.Text.Encoding.Unicode.GetBytes(clearText);
-            var pdb = new Rfc2898DeriveBytes(password,
-                                                              new byte[]
-                                                                  {
-                                                                      0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d,
-                                                                      0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76
-                                                                  });
-
-            // PasswordDeriveBytes is for getting Key and IV.
-            // Using PasswordDeriveBytes object we are first getting 32 bytes for the Key (the default
-            //Rijndael key length is 256bit = 32bytes) and then 16 bytes for the IV.
-            // IV should always be the block size, which is by default 16 bytes (128 bit) for Rijndael.
-
-            byte[] encryptedData = Encrypt(clearBytes, pdb.GetBytes(32), pdb.GetBytes(16));
-            return Convert.ToBase64String(encryptedData);
-        }
-
-
-
-        // Encrypt a byte array into a byte array using a key and an IV
-
-        private static byte[] Encrypt(byte[] clearData, byte[] key, byte[] iv)
-        {
-            byte[] encryptedData;
-            using (var ms = new MemoryStream())
-            {
-                var alg = Rijndael.Create();
-
-                // Algorithm. Rijndael is available on all platforms.
-
-                alg.Key = key;
-                alg.IV = iv;
-                var cs = new CryptoStream(ms, alg.CreateEncryptor(), CryptoStreamMode.Write);
-
-                //CryptoStream is for pumping our data.
-
-                cs.Write(clearData, 0, clearData.Length);
-                cs.Close();
-                encryptedData = ms.ToArray();
-            }
-            return encryptedData;
-        }
-
-
-        public static byte[] Decrypt(byte[] cipherData, byte[] key, byte[] iv)
-        {
-            byte[] decryptedData;
-            using (var ms = new MemoryStream())
-            {
-                var alg = Rijndael.Create();
-                alg.Key = key;
-                alg.IV = iv;
-                var cs = new CryptoStream(ms, alg.CreateDecryptor(), CryptoStreamMode.Write);
-                cs.Write(cipherData, 0, cipherData.Length);
-                cs.Close();
-                decryptedData = ms.ToArray();
-            }
-            return decryptedData;
-        }
-
-
-        // Decrypt a string into a string using a password
-        // Uses Decrypt(byte[], byte[], byte[])
-
-
-        public static string Decrypt(this string cipherText, string password)
-        {
-            if (cipherText.Length == 0)
-                return string.Empty;
-
-            byte[] cipherBytes = Convert.FromBase64String(cipherText);
-            var pdb = new Rfc2898DeriveBytes(password,
-                                             new byte[]
-                                                 {
-                                                     0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65,
-                                                     0x64, 0x76, 0x65, 0x64, 0x65, 0x76
-                                                 });
-            byte[] decryptedData = Decrypt(cipherBytes, pdb.GetBytes(32), pdb.GetBytes(16));
-            return System.Text.Encoding.Unicode.GetString(decryptedData);
-        }
-
-#endif
 
 
         #region "  Char Extensions  "
@@ -1730,7 +1688,7 @@ namespace System
             }
 
             byte[] buffer;
-            Encoding fileIOEncoding = Encoding.Default;
+            Encoding fileIOEncoding = Encoding.UTF8;
 
             char[] chars = new char[] { c };
             if (fileIOEncoding.GetMaxByteCount(1) == 1)
